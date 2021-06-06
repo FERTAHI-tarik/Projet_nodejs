@@ -6,7 +6,12 @@ module.exports = {
     return User.findAll()
     },
 
-    //getUsers(offset = 0, limit = 10) { },
+    getUsers(n1, n2) { 
+        return User.findAndCountAll({
+            offset : n1,
+            limit : n2
+        });
+    },
 
     getAdmins(){ 
         return User.findAll({
@@ -57,10 +62,10 @@ module.exports = {
         return User.update(user);
     },
 
-    deleteUser(email) { 
+    deleteUser(id) { 
         User.destroy({
             where: {
-                email: email
+                id: id
             },
         });
     },
