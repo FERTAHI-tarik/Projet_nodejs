@@ -6,10 +6,10 @@ module.exports = {
     return User.findAll()
     },
 
-    getUsers(n1, n2) { 
+    getUsers(offset=0, limit=10) { 
         return User.findAndCountAll({
-            offset : n1,
-            limit : n2
+            offset : offset,
+            limit : limit
         });
     },
 
@@ -37,7 +37,7 @@ module.exports = {
         });
      },
 
-    getUser(id) {
+    getUser(id = 1) {
         return User.findOne({
             where : { 
                 id : id
@@ -55,7 +55,7 @@ module.exports = {
     },
 
     addUser(user) { 
-        return User.Create(user)
+        return User.create(user)
     },
 
     updateUser(user) { 
