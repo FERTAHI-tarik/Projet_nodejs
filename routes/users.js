@@ -1,5 +1,5 @@
 const user = require('../models/user');
-const userRepo = require('../respositories/users');
+const userRepo = require('../repositories/users');
 /************************************************** */
 const router = require('express').Router();
 /* GET users listing. */
