@@ -1,5 +1,5 @@
 let currentPage = 1
-let limit = 20
+let limit = 21
 let nbElements
 
 $("#updateBtn").hide()
@@ -92,19 +92,21 @@ function updateUser(event){
                             showMsg(`User with id = ${id} updated successfully!`,"success")
                     })
 }
-function addUser(event){
+function addUser(event) {
     event.preventDefault()
-    clearMsgs()
     const user = formData()
-    fetch(`http://127.0.0.1:3000/users/`,
-    {method:"POST",
-    body:JSON.stringify(user),
-    headers:headers()}).then(handleErrors)
-                    .then(() => {
-                            refreshForm()
-                            showPaginatedUsers()
-                            showMsg(`User created successfully!`,"success")
-                    })
+    fetch('http://127.0.0.1:3000/users', {
+        method: 'POST',
+        body: JSON.stringify(user),
+        headers: { "Content-Type": "application/json" }
+    }).then(() => {
+        showMsg(`l'utilisateur ${user.username} a été créé avec success`)
+        refreshForm()
+        showpaginatedusers()
+    })
+        .catch(err => {
+            console.log(err)
+        })
 }
 function intiEdit(id,username,email,password,role){
         $("#username").val(username)

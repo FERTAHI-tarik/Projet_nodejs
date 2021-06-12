@@ -36,8 +36,6 @@ const getedUser = await userRepo.getUser(user.id);
 if (!getedUser ){
   res.send(await userRepo.deleteUser(id))
 }
-
-  
 });
 /******************************************/
-module.exports = router;
+  module.exports = router;
