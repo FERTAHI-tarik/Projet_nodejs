@@ -1,5 +1,5 @@
 let currentPage = 1
-let limit = 21
+let limit = 22
 let nbElements
 
 $("#updateBtn").hide()
@@ -15,6 +15,9 @@ function showPaginatedUsers(){
                 createRow(element.id,element.username,element.email,element.password,element.role).appendTo("#usesData")
            });
         })
+}
+function clearMsgs() {
+    $("#pageCard").html("")
 }
 
 function showMsg(msg,type){
@@ -57,16 +60,20 @@ function updateButtons(){
     }
 }
 
-function deleteUser(id){
-    clearMsgs()
-    fetch(`http://127.0.0.1:3000/users/${id}`,{method:"DELETE",headers:headers()})
-    .then(handleErrors)
-    .then(() => {
-            showPaginatedUsers()
-            showMsg(`User with id = ${id} deleted successfully!`,"success")
-    })
+function deleteUser(id) {
+    fetch('http://127.0.0.1:3000/users/' + id, { method: 'DELETE' })
+        .then(handleErrors)
+        .then(() => {
+            $("#tab > tbody").empty();
+            refreshForm();
+            showpaginatedusers()
+        })
+        
 }
 
+
+
+/************************************************** */
 const formData = () =>{
     const username = $("#username").val()
     const email = $("#email").val()
@@ -75,16 +82,15 @@ const formData = () =>{
     return {username,email,password,role}
 }
 
-function updateUser(event){
-    event.preventDefault()
+function updateUser( username, email, password, role){
     clearMsgs()
-    const user = formData()
-    const id = $("#userId").val()
+    const user = formData( username, email, password, role)
+    const id = parseInt($("#userId").val())
     Object.assign(user,{id:id})
-    fetch(`http://127.0.0.1:3000/users/`,
-    {method:"PUT",
+    fetch("http://127.0.0.1:3000/users/",
+    {method:'PUT',
     body:JSON.stringify(user),
-    headers:headers()})
+    headers:{ 'Content-type': 'application/json; charset=UTF-8' }})
                     .then(handleErrors)
                     .then(() => {
                             refreshForm()
@@ -92,14 +98,19 @@ function updateUser(event){
                             showMsg(`User with id = ${id} updated successfully!`,"success")
                     })
 }
-function addUser(event) {
-    event.preventDefault()
-    const user = formData()
+
+
+function addUser(username, email, password, role) {
+    //event.preventDefault()
+    const user = formData(username,email,password,role)
     fetch('http://127.0.0.1:3000/users', {
         method: 'POST',
         body: JSON.stringify(user),
         headers: { "Content-Type": "application/json" }
-    }).then(() => {
+        
+    })
+    
+    .then(() => {
         showMsg(`l'utilisateur ${user.username} a été créé avec success`)
         refreshForm()
         showpaginatedusers()
@@ -107,7 +118,10 @@ function addUser(event) {
         .catch(err => {
             console.log(err)
         })
+
 }
+
+
 function intiEdit(id,username,email,password,role){
         $("#username").val(username)
         $("#email").val(email)

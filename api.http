@@ -1,15 +1,32 @@
-get http://127.0.0.1:3000/users/1
 
+###
+GET http://127.0.0.1:3000/users
+###
+POST http://127.0.0.1:3000/users
+Content-Type: application/json
 
+{
+    "username":"userV22",
+    "email":"userv22@gmail.com",
+    "password":"userv22pwd",
+    "role":"guest"
 
+}
+###
+GET http://127.0.0.1:3000/users/7
+###
+PUT http://127.0.0.1:3000/users
 
+Content-Type: application/json
+{
+  "username": "FertahiTarik",
+  "email": "fertahitarik@gmail.com",
+  "password": "8ypbQGM5FhB2j9n",
+  "role": "Admin",
+  
+}
+###
 
+###Delete user
 
-
-
-
-
-
-
-
-
+DELETE  http://127.0.0.1:3000/users/1

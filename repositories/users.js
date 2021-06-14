@@ -37,7 +37,7 @@ module.exports = {
         });
      },
 
-    getUser(id = 1) {
+    getUser(id) {
         return User.findOne({
             where : { 
                 id : id
@@ -54,14 +54,39 @@ module.exports = {
         }); 
     },
 
-    addUser(user) { 
-        return User.create(user)
+    addUser(username, email, password, role) {
+        const user_ = {
+            username:username, 
+            email:email, 
+            password:password, 
+            role:role
+        };
+        return User.create(user_)
     },
-
     updateUser(user) { 
-        return User.update(user);
-    },
+        return User.update(
+             user,
+           {
+               where:{
+                   email : user.email
+               }
+           }
+         )
+     },
 
+/*
+    updateUser( user) { 
+        
+        const user_ = {
+
+            username:username, 
+            email:email, 
+            password:password, 
+            role:role
+        };
+        return User.update(user_)
+    },
+*/
     deleteUser(id) { 
         User.destroy({
             where: {
