@@ -10,11 +10,10 @@ router.get('/', async function(req, res, next) {
 
   router.get('/:id', async function(req, res, next) {
     res.send(await tagsRepo.getTag(req.params.id))
-})
+  })
 
   router.post('/', async function (req, res, next ){
     const tag = req.body;
-  
     const getedTag = await tagsRepo.getArticle(comment.id);
     if( !getedTag ){
       res.send(await tagsRepo.addTag(id))

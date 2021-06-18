@@ -1,94 +1,116 @@
 'use strict';
-const faker = require('faker');
+var faker = require('faker');
+const {User,Article,Tag}  = require('../models');
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    const usersData = [];
-     const roles = ['admin','author','guest']
-     const tagData = []
-     const articleData = [] 
-     const articleTagsData = []
-     const commentData = []
+     var user = []
+     var year = 2021
+     for(var i=0;i<20;i++){
+      var date = new Date()
+      date.setFullYear(--year)
+      user.push({
+        username: faker.name.findName(),
+        email: faker.internet.email(),
+        password: faker.internet.password(),
+        role: faker.helpers.randomize([ 'admin', 'author', 'guest']),
+        createdAt: date,
+        updatedAt: date
+       })
+     }
+      
+  await queryInterface.bulkInsert('Users', user, {});
 
-     for (let i = 0; i < 10; i++) {
-       const tagDate = faker.date.between(new Date(2000, 1, 1, 0, 0, 0),new Date())
-        const tag = {
-          id:(i+1),
-          name:faker.lorem.sentence(3),
-          createdAt:tagDate,
-          updatedAt: tagDate
+       // tags:
+       var tag = []
+       for(var i=0;i<10;i++){
+        date.setFullYear(--year)
+        tag.push({
+          name: faker.random.words(3),
+          createdAt: new Date(),
+          updatedAt: new Date()
+         })
+       }
+
+       await queryInterface.bulkInsert('Tags', tag, {});
+       
+         // articles:
+         var article = []
+         var users = await User.findAll();
+        for(user of users)
+        {
+          var number = faker.datatype.number({'min':2,'max':10})
+          for(var i = 0;i<number;i++)
+          {
+                var date = new Date(user.createdAt)
+                date.setDate(date.getDate()+i)
+                article.push(
+                {
+                  title: faker.name.title()+i,
+                  content: faker.lorem.text(),
+                  /*image: faker.image.imageUrl(),*/
+                  published : true,
+                  UserId :user.id,
+                  createdAt:date,
+                  updatedAt:date
+                })
+          }
         }
-        tagData.push(tag)
-    }
-    let articleId = 1
-     for (let i = 0; i < 20; i++) {
-      const date = faker.date.between(new Date(2000, 1, 1, 0, 0, 0),new Date())
-         const user = {
-             id:(i+1),
-             username: faker.internet.userName(),
-             email: faker.internet.email(),
-             password:faker.internet.password(),
-             role:faker.helpers.randomize(roles),
-             createdAt:date,
-             updatedAt: date
-         }
-         
-         for(let k = 0;k<Math.floor(Math.random() * (10 - 2) + 2);k++){
-            const articleDate = faker.date.between(date,new Date())
-            const article = {
-              id:articleId,
-              userId:(i+1),
-              title:faker.lorem.sentence(),
-              content:faker.lorem.paragraphs(),
-              createdAt:articleDate,
-              updatedAt: articleDate
-            }
-            
-            for(let l = 1;l<=Math.floor(Math.random() * (6 - 2) + 2);l++){
-              const articleTag = {
-                ArticleId:articleId,
-                TagId:l,
-                createdAt:articleDate,
-                updatedAt:articleDate
-              }
-              articleTagsData.push(articleTag)
-            }
-            for(let c = 0;c<Math.floor(Math.random() * (10));c++){
-              const commentDate = faker.date.between(articleDate,new Date())
-              const comment = {
-                content:faker.lorem.text(),
-                ArticleId:articleId,
-                createdAt:commentDate,
-                updatedAt:commentDate
-              }
-              commentData.push(comment)
-            }
-            articleId++
-            articleData.push(article)
-         }
-
-         usersData.push(user)
-        }
-
+        await queryInterface.bulkInsert('Articles', article, {});
         
-   
-         await queryInterface.bulkInsert('Users', usersData);
-         console.log("users inserted");
-         await queryInterface.bulkInsert('Tags', tagData);
-         console.log("tags inserted");
-         await queryInterface.bulkInsert('Articles', articleData);
-         console.log("articles inserted");
-         await queryInterface.bulkInsert('ArticleTags', articleTagsData);
-         console.log("articlesTags inserted");
-         await queryInterface.bulkInsert('Comments', commentData);
-         console.log("Comments inserted");
-        },
+
+     // ArticleTags:
+     var articleTags = []
+     var articles = await Article.findAll();
+     var tags = await Tag.findAll({
+      attributes: ['id']
+     });
+     for(article of articles)
+     {
+
+       var number = faker.datatype.number({'min':2,'max':6})
+       var TagIds = faker.random.arrayElements(tags,number);
+       
+       for(const TagId of TagIds)
+       {
+             articleTags.push(
+             {
+               TagId :TagId.id,
+               ArticleId :article.id,
+               createdAt:article.createdAt,
+               updatedAt:article.createdAt
+             })
+       }
+     }
+     await queryInterface.bulkInsert('ArticleTags', articleTags, {});
+
+     //comments:
+     var comments = []
+
+  for(article of articles)
+     {
+
+       var number = faker.datatype.number({'min':0,'max':10})
+      
+       for(var i = 0;i<number;i++)
+       {
+             comments.push(
+             {
+               content : faker.lorem.text(),
+               ArticleId :article.id,
+               createdAt:article.createdAt,
+               updatedAt:article.createdAt
+             })
+       }
+     }
+    await queryInterface.bulkInsert('Comments',comments, {});
+  },
 
   down: async (queryInterface, Sequelize) => {
-    /**
-     * Add commands to revert seed here.
-     *
-     * Example:
-     * await queryInterface.bulkDelete('People', null, {});
-     */
+   
+     await queryInterface.bulkDelete('ArticleTags', null, {});
+     await queryInterface.bulkDelete('Comments', null, {});
+     await queryInterface.bulkDelete('Articles', null, {});
+     await queryInterface.bulkDelete('Users', null, {});
+     await queryInterface.bulkDelete('Tags', null, {});
   }
 };
